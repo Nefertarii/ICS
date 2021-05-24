@@ -1,9 +1,122 @@
-记录心得  
-/*   
- *   Q1
- *   bitXor - x^y using only ~ and & 
+/* 
+ * bitXor - x^y using only ~ and & 
  *   Example: bitXor(4, 5) = 1
  *   Legal ops: ~ &
  *   Max ops: 14
+ *   Rating: 1
  */
 int bitXor(int x, int y)
+{
+  /*
+  暂未想出原因 暴力解出的
+  */
+  return ~(~(~(x & y) & x) & ~(~(x & y) & y));
+  //~(~x & ~y) & ~(x & y);
+}
+
+/* 
+ * tmin - return minimum two's complement integer 
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 4
+ *   Rating: 1
+ */
+int tmin(void)
+{
+  /*
+  最长32位字节 Tmin = 1000...0 直接逻辑位移
+  */
+  return 1 << 31;
+}
+
+/*
+ * isTmax - returns 1 if x is the maximum, two's complement number,
+ *     and 0 otherwise 
+ *   Legal ops: ! ~ & ^ | +
+ *   Max ops: 10
+ *   Rating: 1
+ */
+int isTmax(int x)
+{
+  /*
+  如果是Tmax 在+1后会变成 Tmin
+  Tmax+Tmin为全1 对其取反为全0
+  返回值要求是Tmax返回1 否则返回0
+  对x+1 再在返回时作非操作
+
+  4,5行假设x=-1 x+1=0 还没弄明白
+  */
+  int tmp = x + 1;
+  x = x + tmp;
+  x = ~x;
+
+  //x = x + 1;  false
+
+  tmp = !tmp;
+  x = x + tmp;
+
+  return !x;
+}
+
+/* 
+ * allOddBits - return 1 if all odd-numbered bits in word set to 1
+ *   where bits are numbered from 0 (least significant) to 31 (most significant)
+ *   Examples allOddBits(0xFFFFFFFD) = 0, allOddBits(0xAAAAAAAA) = 1
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 12
+ *   Rating: 2
+ */
+int allOddBits(int x)
+{
+  /*
+  掩码1010...1010
+  取得x的奇数位1 再与掩码异或
+  若x奇数位全为1 异或得0
+  返回时取非 上一步得0返回1 否则返回0
+  */
+  int mask = (int)0xAAAAAAAA;
+  x = x & mask;
+  x = x ^ mask;
+  return !x;
+}
+/* 
+ * negate - return -x 
+ *   Example: negate(1) = -1.
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 5
+ *   Rating: 2
+ */
+ 
+ 
+int negate(int x)
+{
+  /*
+  取反再+1
+  */
+  return (~x) + 1;
+}
+
+
+/* 
+ * isAsciiDigit - return 1 if 0x30 <= x <= 0x39 (ASCII codes for characters '0' to '9')
+ *   Example: isAsciiDigit(0x35) = 1.
+ *            isAsciiDigit(0x3a) = 0.
+ *            isAsciiDigit(0x05) = 0.
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 15
+ *   Rating: 3
+ */
+int isAsciiDigit(int x)
+{
+  /*
+  upper 加上比0x39大的数后符号由正变负
+  lower 加上比0x30小的数后符号由正变负
+  返回取符号位 全0返回1 否则返回0
+  */
+  int upper = (1 << 31) - 0x3A;
+  int lower = (1 << 31) - 0x31;
+  upper += x;
+  lower -= x;
+  upper >> 31;
+  lower >> 31;
+  return !(upper | lower);
+}
