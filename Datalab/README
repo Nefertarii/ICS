@@ -28,33 +28,17 @@ int tmin(void)
   return 1 << 31;
 }
 
-/*
- * isTmax - returns 1 if x is the maximum, two's complement number,
- *     and 0 otherwise 
- *   Legal ops: ! ~ & ^ | +
- *   Max ops: 10
- *   Rating: 1
- */
 int isTmax(int x)
 {
   /*
-  如果是Tmax 在+1后会变成 Tmin
-  Tmax+Tmin为全1 对其取反为全0
-  返回值要求是Tmax返回1 否则返回0
-  对x+1 再在返回时作非操作
-
-  4,5行假设x=-1 x+1=0 还没弄明白
+  利用异或性质0异或任何数等于其本身
+  如果是Tmax tmp1为0 tmp为全0 取非后为1  return 0^1 = 1 
+  如果是-1 tmp为1 tmp为0 取非后为1 return 1^1 = 0
+  如果是其他任何数如 2  tmp1为0  tmp2不为0 取非后为0  return 0^0 = 0
   */
-  int tmp = x + 1;
-  x = x + tmp;
-  x = ~x;
-
-  //x = x + 1;  false
-
-  tmp = !tmp;
-  x = x + tmp;
-
-  return !x;
+  int tmp1 = !(x + 1);
+  int tmp2 = !((x + 1) ^ (~x));
+  return tmp1 ^ tmp2;
 }
 
 /* 
@@ -108,15 +92,14 @@ int negate(int x)
 int isAsciiDigit(int x)
 {
   /*
-  upper 加上比0x39大的数后符号由正变负
-  lower 加上比0x30小的数后符号由正变负
-  返回取符号位 全0返回1 否则返回0
+  upper 0x39  0011 1001b 加上比0x39大的数后符号由正变负
+  lower 0x30  0011 0000b 加上比0x30小的值时是负数
+  返回取符号位 全0返回0 否则返回1
   */
-  int upper = (1 << 31) - 0x3A;
-  int lower = (1 << 31) - 0x31;
-  upper += x;
-  lower -= x;
-  upper >> 31;
-  lower >> 31;
+  int sign = 0x1 << 31;
+  int upper = ~(sign | 0x39);
+  int lower = ~0x30;
+  upper = sign & (upper + x) >> 31;
+  lower = sign & (lower + 1 + x) >> 31;
   return !(upper | lower);
 }
