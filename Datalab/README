@@ -103,3 +103,37 @@ int isAsciiDigit(int x)
   lower = sign & (lower + 1 + x) >> 31;
   return !(upper | lower);
 }
+int isAsciiDigit(int x)
+{
+  /*
+  upper 0x39  0011 1001b 加上比0x39大的数后符号由正变负
+  lower 0x30  0011 0000b 加上比0x30小的值时是负数
+  返回取符号位 全0返回0 否则返回1
+  没弄明白 回头再看
+  */
+  int sign = 0x1 << 31;
+  int upper = ~(sign | 0x39);
+  int lower = ~0x30;
+  upper = sign & (upper + x) >> 31;
+  lower = sign & (lower + 1 + x) >> 31;
+  return !(upper | lower);
+}
+/* 
+ * conditional - same as x ? y : z 
+ *   Example: conditional(2,4,5) = 4
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 16
+ *   Rating: 3
+ */
+int conditional(int x, int y, int z)
+{
+  /*
+  x=true return y else return z
+  先对x取非 构造成全0或者全1
+  利用获得的x作为掩码 
+  进行(z&x),(y&~x)操作 必定有一侧为全0
+  利用或操作 (z|y) 选择出需要的数字
+  */
+  x = (!x) << 31;
+  return (z & x) | (y & ~x);
+}
