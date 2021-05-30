@@ -1,3 +1,5 @@
+1
+---------
 /* 
  * bitXor - x^y using only ~ and & 
  *   Example: bitXor(4, 5) = 1
@@ -14,6 +16,8 @@ int bitXor(int x, int y)
   //~(~x & ~y) & ~(x & y);
 }
 
+2
+---------
 /* 
  * tmin - return minimum two's complement integer 
  *   Legal ops: ! ~ & ^ | + << >>
@@ -28,6 +32,15 @@ int tmin(void)
   return 1 << 31;
 }
 
+3
+---------
+/*
+ * isTmax - returns 1 if x is the maximum, two's complement number,
+ *     and 0 otherwise 
+ *   Legal ops: ! ~ & ^ | +
+ *   Max ops: 10
+ *   Rating: 1
+ */
 int isTmax(int x)
 {
   /*
@@ -136,4 +149,30 @@ int conditional(int x, int y, int z)
   */
   x = (!x) << 31;
   return (z & x) | (y & ~x);
+}
+
+/* 
+ * isLessOrEqual - if x <= y  then return 1, else return 0 
+ *   Example: isLessOrEqual(4,5) = 1.
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 24
+ *   Rating: 3
+ */
+int isLessOrEqual(int x, int y)
+{
+  /*
+  先判断符号位
+  符号位相同两数相减 再判断符号位
+  sign1若为1 则x > y  否则为等于或小于
+  sign2若为1 则x = y  否则为大于或小于 大于在sign1已经判断
+  sign3若为1 则x < y  否则为大于或等于 y-x取符号位再取非 不能使用 - 符号
+  返回1有两种情况 符号相同标志位为0（相同）位与 y-x 的符号为0（y-x>=0）结果为1
+                 符号相同标志位为1（不同）位与x的符号位为1（x<0）
+  */
+  int signx = x >> 31;
+  int signy = y >> 31;
+  int sign1 = (signx & !signy);
+  int sign2 = (!(signx ^ signy);
+  int sign3 = !((y + ~x + 1) >> 31));
+  return sign1 | (sign2 & sign3);
 }
