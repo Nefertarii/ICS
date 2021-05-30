@@ -54,6 +54,8 @@ int isTmax(int x)
   return tmp1 ^ tmp2;
 }
 
+4
+---------
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
  *   where bits are numbered from 0 (least significant) to 31 (most significant)
@@ -75,6 +77,9 @@ int allOddBits(int x)
   x = x ^ mask;
   return !x;
 }
+
+5
+---------
 /* 
  * negate - return -x 
  *   Example: negate(1) = -1.
@@ -82,8 +87,6 @@ int allOddBits(int x)
  *   Max ops: 5
  *   Rating: 2
  */
- 
- 
 int negate(int x)
 {
   /*
@@ -92,7 +95,8 @@ int negate(int x)
   return (~x) + 1;
 }
 
-
+6
+---------
 /* 
  * isAsciiDigit - return 1 if 0x30 <= x <= 0x39 (ASCII codes for characters '0' to '9')
  *   Example: isAsciiDigit(0x35) = 1.
@@ -116,6 +120,9 @@ int isAsciiDigit(int x)
   lower = sign & (lower + 1 + x) >> 31;
   return !(upper | lower);
 }
+
+7
+---------
 int isAsciiDigit(int x)
 {
   /*
@@ -131,6 +138,9 @@ int isAsciiDigit(int x)
   lower = sign & (lower + 1 + x) >> 31;
   return !(upper | lower);
 }
+
+8
+---------
 /* 
  * conditional - same as x ? y : z 
  *   Example: conditional(2,4,5) = 4
@@ -151,6 +161,8 @@ int conditional(int x, int y, int z)
   return (z & x) | (y & ~x);
 }
 
+9
+---------
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
  *   Example: isLessOrEqual(4,5) = 1.
