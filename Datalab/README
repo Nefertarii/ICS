@@ -186,3 +186,23 @@ int isLessOrEqual(int x, int y)
   int sign3 = !((y + ~x + 1) >> 31));
   return sign1 | (sign2 & sign3);
 }
+
+10
+----------
+/* 
+ * logicalNeg - implement the ! operator, using all of 
+ *              the legal operators except !
+ *   Examples: logicalNeg(3) = 0, logicalNeg(0) = 1
+ *   Legal ops: ~ & ^ | + << >>
+ *   Max ops: 12
+ *   Rating: 4 
+ */
+int logicalNeg(int x)
+{
+  /*
+  利用其补码的性质 除了0和Tmin外其他数都是互为相反数关系
+  0和最小数的补码是本身 不过0的符号位与其补码符号位位或为0 最小数的为1
+  */
+  return ((x | (~x + 1)) >> 31) + 1;
+}
+
