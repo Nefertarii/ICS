@@ -1,8 +1,7 @@
 # ICS
-Learn Introduction to Computer Systems
+用于记录学习CMU大学的课程Introduction to Computer Systems所配套的lab实验
 
-8 Lab
-
+共计8个Lab 如下
 Data Lab  
 Bomb Lab  
 Attack Lab  
