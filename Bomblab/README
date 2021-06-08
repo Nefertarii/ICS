@@ -60,8 +60,8 @@ else explode_bomb
   eax = nums[]
   eax+=eax (eax*2)
   nums[]+1 = eax*2 
-  if(rbx!=rbp) goto 400f17
-  else goto 400f3c
+  if(rbx!=rbp) goto 400f3c
+  else goto 400f17
 400f30:
   nums[]+1=rbx
   if (rbx != nums[]+5) goto400f17
@@ -96,4 +96,9 @@ switch成功后全部转跳至地址400fbe 该地址之后的操作将判断第�
 
 
 ***phase4***
+...没完全弄明白
+phase4又4个不同答案为
+0 0, 1 0, 3 0, 7 0
+
+***phase5***
 
