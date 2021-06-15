@@ -102,18 +102,15 @@ int conditional(int x, int y, int z)
 int isLessOrEqual(int x, int y)
 {
     /*
-    先判断符号位
-    符号位相同两数相减 再判断符号位
-    sign1若为1 则x > y  否则为等于或小于 
-    sign2若为1 则x = y  否则为大于或小于 大于在sign1已经判断
-    sign3若为1 则x < y  否则为大于或等于 y-x取符号位再取非 不能使用 - 符号             
+    先取符号位 两个符号不同的补码相减可能会造成溢出
+    符号位相同则两数相减 再根据符号位判断大小
+    如果不同 可以很容易得到结果 如果相同 则需要相减来判断
     */
-    int signx = x >> 31;
-    int signy = y >> 31;
-    int sign1 = (signx & !signy);
-    int sign2 = !(signx ^ signy);
-    int sign3 = !((y + ~x + 1) >> 31);
-    return sign1 | (sign2 & sign3);
+    int signx = (x >> 31) & 1;
+    int signy = (y >> 31) & 1;
+    int signdif = (!signy) & signx;
+    int signsam = (!(signx ^ signy)) & (((x + (~y)) >> 31) & 1);
+    return signdif | signsam;
 }
 
 9
