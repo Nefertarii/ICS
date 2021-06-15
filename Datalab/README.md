@@ -1,5 +1,4 @@
-1
----------
+```c
 int bitXor(int x, int y) //1
 {
     /*
@@ -9,9 +8,9 @@ int bitXor(int x, int y) //1
     */
     return (~(x & y)) & (~(~x & ~y));
 }
+```
 
-2
----------
+```c
 int tmin(void) //1
 {
     /*
@@ -19,9 +18,9 @@ int tmin(void) //1
     */
     return 1 << 31;
 }
+```
 
-3
----------
+```c
 int isTmax(int x)
 {
     /*
@@ -34,9 +33,9 @@ int isTmax(int x)
     int tmp2 = !((x + 1) ^ (~x));
     return tmp1 ^ tmp2;
 }
+```
 
-4
----------
+```c
 int allOddBits(int x)
 {
     /*
@@ -49,9 +48,9 @@ int allOddBits(int x)
     int temp = 0xaa+(0xaa<<8) 
     return !x;
 }
+```
 
-5
----------
+```c
 int negate(int x) //1
 {
     /*
@@ -59,9 +58,9 @@ int negate(int x) //1
     */
     return (~x) + 1;
 }
+```
 
-6
----------
+```c
 int isAsciiDigit(int x)
 {
     /*
@@ -80,9 +79,9 @@ int isAsciiDigit(int x)
     lower = sign & (lower + 1 + x) >> 31;
     return !(upper | lower);
 }
+```
 
-7
----------
+```c
 int conditional(int x, int y, int z)
 {
     /*
@@ -96,9 +95,9 @@ int conditional(int x, int y, int z)
     x = (!x << 31) >> 31;
     return (z & x) | (y & ~x);
 }
+```
 
-8
----------
+```c
 int isLessOrEqual(int x, int y)
 {
     /*
@@ -112,9 +111,9 @@ int isLessOrEqual(int x, int y)
     int signsam = (!(signx ^ signy)) & (((x + (~y)) >> 31) & 1);
     return signdif | signsam;
 }
+```
 
-9
----------
+```c
 int logicalNeg(int x)
 {
     /*
@@ -123,9 +122,9 @@ int logicalNeg(int x)
     */
     return ((x | (~x + 1)) >> 31) + 1;
 }
+```
 
-10
-----------
+```c
 int howManyBits(int x)
 {
     /*
@@ -133,4 +132,4 @@ int howManyBits(int x)
     */
     return 0;
 }
-
+```
