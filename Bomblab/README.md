@@ -127,7 +127,7 @@ int func4(int x, int y, int z)
 继续phase4 发现第二参数必须为0 由此可以得到phase4有4个不同答案为
 0 0, 1 0, 3 0, 7 0
 
-***phase5***
+### ***phase5***
 phase5在处理时就发现了值是不同的 但并没有发现规律 不看别人的分析确实有点想不到  
 phase5调用了之前的几个函数 string_length 和 strings_not_equals 都已经了解其作用  
 此外 其中还有一些数据在其中  
@@ -150,6 +150,6 @@ char array[16] = {'m','a','d','u','i','e','r','s','n','f','o','t','v','b','y','l
 char target[6] = {'f','l','y','e','r','s'}
 ```
 
-***phase6***
+### ***phase6***
 
 
