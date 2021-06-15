@@ -134,9 +134,9 @@ phase5调用了之前的几个函数 string_length 和 strings_not_equals 都已
 地址0x40245e为"flyers"  
 地址0x4024b0为"maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?!"  
 其中地址0x4024b0 的前16位字符引人注意 "maduiersnfotvbyl"   
-记录后观察phase5 汇编代码401062 ~ 401084表明输入的数据必须长度为6位  
+记录后观察phase5 汇编代码401062 ~ 401084部分 表明输入的数据必须长度为6位  
 接下来进入phase5的关键部分  
-汇编代码40108b ~ 4010ae将输入的六位参数经过处理后依次入栈   
+汇编代码40108b ~ 4010ae部分 是将输入的六位参数经过处理后依次入栈   
 处理方式则是循环将每个字符与0xf做'&'操作 并把'&'操作后的值作为指针访问地址0x4024b0下的其中一位  
 访问地址0x4024b0所得到值将存入栈中 (操作后的值范围为0 ~ f 对应就是0x4024b0的前16位字符)  
 处理后的字符将会和地址0x40245e 的字符串一起作为参数带入函数strings_not_equals便可拆除炸弹 即处理后的字符串等于"flyers"  
