@@ -128,4 +128,28 @@ int func4(int x, int y, int z)
 0 0, 1 0, 3 0, 7 0
 
 ***phase5***
+phase5在处理时就发现了值是不同的 但并没有发现规律 不看别人的分析确实有点想不到  
+phase5调用了之前的几个函数 string_length 和 strings_not_equals 都已经了解其作用  
+此外 其中还有一些数据在其中  
+地址0x40245e为"flyers"  
+地址0x4024b0为"maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?!"  
+其中地址0x4024b0 的前16位字符引人注意 "maduiersnfotvbyl"   
+记录后观察phase5 汇编代码401062 ~ 401084表明输入的数据必须长度为6位  
+接下来进入phase5的关键部分  
+汇编代码40108b ~ 4010ae将输入的六位参数经过处理后依次入栈   
+处理方式则是循环将每个字符与0xf做'&'操作 并把'&'操作后的值作为指针访问地址0x4024b0下的其中一位  
+访问地址0x4024b0所得到值将存入栈中 (操作后的值范围为0 ~ f 对应就是0x4024b0的前16位字符)  
+处理后的字符将会和地址0x40245e 的字符串一起作为参数带入函数strings_not_equals便可拆除炸弹 即处理后的字符串等于"flyers"  
+(我自己根本想不到是这么用)  
+phase5的答案非常多 使用9on567可以通过 但总体答案如下
+```
+每次input的字符进行'&'操作后在array中取到的值只要对应target即可
+array[input[i]&0xf] = target[i];
+
+char array[16] = {'m','a','d','u','i','e','r','s','n','f','o','t','v','b','y','l'};
+char target[6] = {'f','l','y','e','r','s'}
+```
+
+***phase6***
+
 
