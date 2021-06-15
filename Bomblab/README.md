@@ -37,54 +37,58 @@
 ```
 
 ### ***phase_2***
-在main进入phase2之前用%rdi保存了输入
-进入phase2 简单看一遍 分配了0x28大小的空间 且依然有函数转跳 其名字同样也给出了提示
-进入read_six_numbers内部查看 又分配了0x18大小的空间 并用了大量的lea操作 先没管这些操作 
-继续查看发现语句mov $0x4025c3 ,%esi 并在之后调用了sscanf函数 
-调用之后对比返回值和常数5 大于5则表示sscanf成功并返回 否则explode
-(期间查找了一下sscanf函数的操作 返回值为成功操作的数字数量 且查看地址0x4025c3的值为"%d %d %d %d %d %d")
-了解后猜测在调用该函数之前的大量lea操作作为参数的寄存器可能是为了保存值 简单整理后的地址为如下情况
-%rsp = (%rsi+0x14) 
-%rsp =  %rsi+0x10
-%r9  =  %rsi+0x0c
-%r8  =  %rsi+0x08
-%rcx =  %rsi+0x04
-%rdx =  %rsi
-函数read_six_number操作也就确定 储存输入的6个数字在一开始phase2分配的0x18大小(24字节)的空间中以%rsi作为开始的地址
-回到phase2 对剩余函数进行整理得出如下结果(0x18大小地址空间假设为数组nums[] nums[]+1表示为数组的位置+1 寄存器则省略了百分号)
-if (rsp)  = 1 goto 400f30
+在main进入phase2之前用%rdi保存了输入  
+进入phase2 简单看一遍 分配了0x28大小的空间 且依然有函数转跳 其名字同样也给出了提示  
+进入read_six_numbers内部查看 又分配了0x18大小的空间 并用了大量的lea操作 先没管这些操作   
+继续查看发现语句mov $0x4025c3 ,%esi 并在之后调用了sscanf函数   
+调用之后对比返回值和常数5 大于5则表示sscanf成功并返回 否则explode  
+(期间查找了一下sscanf函数的操作 返回值为成功操作的数字数量 且查看地址0x4025c3的值为"%d %d %d %d %d %d")  
+了解后猜测在调用该函数之前的大量lea操作作为参数的寄存器可能是为了保存值 简单整理后的地址为如下情况  
+```
+%rsp = (%rsi+0x14)   
+%rsp =  %rsi+0x10  
+%r9  =  %rsi+0x0c  
+%r8  =  %rsi+0x08  
+%rcx =  %rsi+0x04  
+%rdx =  %rsi  
+```
+函数read_six_number操作也就确定 储存输入的6个数字在一开始phase2分配的0x18大小(24字节)的空间中以%rsi作为开始的地址  
+回到phase2 对剩余函数进行整理得出如下结果(0x18大小地址空间假设为数组nums\[] nums\[]+1表示为数组的位置+1 寄存器则省略了百分号)  
+```
+if(rsp == 1) goto 400f30
 else explode_bomb
 400f17:
   nums[]+1 = rbx
   nums[]+5 = rbp
-  if(rbx) = eax goto 400f25
+  if(rbx == eax) goto 400f25
   else explode_bomb
 400f25:
   eax = nums[]
   eax+=eax (eax*2)
   nums[]+1 = eax*2 
-  if(rbx!=rbp) goto 400f3c
+  if(rbx != rbp) goto 400f3c
   else goto 400f17
 400f30:
   nums[]+1=rbx
-  if (rbx != nums[]+5) goto400f17
+  if(rbx != nums[]+5) goto400f17
   else goto 400f3c
 400f3c:
   %rsp+28
   ret
+ ```
 返回后先对比第一个数是否为 1 是则继续进行 否则将引爆炸弹
-继续往下看 每次对比nums[]的下一个数与前一个数 (num[])*2需要等于num[]+1 直到数组的最后一个数字将返回并解除炸弹
+继续往下看 每次对比nums[]的下一个数与前一个数 (num\[])\*2需要等于num\[]+1 直到数组的最后一个数字将返回并解除炸弹
 于是可以得出答案为 1,2,4,8,16,32
 
-
 ### ***phase3***
-phase3感觉比较简单 且中间没有转跳其他函数
-一开始进行了操作0xc(%rsp),%rcx,    0x8(%rsp),%rdx
-和phase2一样 调用了sscanf 且在调用前有地址$4025cf 使用gdb发现储存的是"%d %d" 得出一开始的%rdx,%rcx为参数传入sscanf
-在调用sscanf后判断了返回值 小于2则直接引爆炸弹
-随后又判断%rsp+8地址的值是否小于7 大于7则引爆炸弹 即第一个输入%rdx需要小于7 并赋值给%rax
-紧跟着为间接转跳语句 jmpq *0x402470(,%rax,8)  即switch语句 利用gdb x/8a 0x402470获得转跳表
-转跳表关系如下
+phase3感觉比较简单 且中间没有转跳其他函数  
+一开始进行了操作0xc(%rsp),%rcx,    0x8(%rsp),%rdx  
+和phase2一样 调用了sscanf 且在调用前有地址$4025cf 使用gdb发现储存的是"%d %d" 得出一开始的%rdx,%rcx为参数传入sscanf  
+在调用sscanf后判断了返回值 小于2则直接引爆炸弹  
+随后又判断%rsp+8地址的值是否小于7 大于7则引爆炸弹 即第一个输入%rdx需要小于7 并赋值给%rax  
+紧跟着为间接转跳语句 jmpq \*0x402470(,%rax,8)即switch语句 利用gdb x/8a 0x402470获得转跳表  
+转跳表关系如下  
+```
 %rax = 0 goto 0x400f7c                     0x400f7c: %eax = 0xcf = 207;  goto 400fbe;
 %rax = 1 goto 0x400fb9                     0x400fb9: %eax = 0x137 = 311; goto 400fbe;
 %rax = 2 goto 0x400f83                     0x400f83: %eax = 0x2c3 = 707; goto 400fbe;
@@ -93,10 +97,10 @@ phase3感觉比较简单 且中间没有转跳其他函数
 %rax = 5 goto 0x400f98                     0x400f98: %eax = 0xce  = 206; goto 400fbe;
 %rax = 6 goto 0x400f9f                     0x400f9f: %eax = 0x2aa = 682; goto 400fbe;
 %rax = 7 goto 0x400fa6                     0x400fa6: %eax = 0x147 = 327; goto 400fbe;
-switch成功后全部转跳至地址400fbe 该地址之后的操作将判断第二个输入与刚刚switch赋值后的寄存器%eax 相等则成功并返回 否则将引爆炸弹
-因此phase3将有8个不同的答案为
-0 207, 1 311, 2 707, 3 256, 4 389, 5 206, 6 682, 7 327
-
+```
+switch成功后全部转跳至地址400fbe 该地址之后的操作将判断第二个输入与刚刚switch赋值后的寄存器%eax 相等则成功并返回 否则将引爆炸弹   
+因此phase3将有8个不同的答案为   
+0 207, 1 311, 2 707, 3 256, 4 389, 5 206, 6 682, 7 327   
 
 ### ***phase4***
 phase4的关键在于函数func4 整理了fun4后整个就清晰了起来
@@ -104,6 +108,7 @@ phase4在调用func4之前 同样使用了地址地址$4025cf 和sscanf函数
 sscanf返回要求等于2 即需要输入两个参数 在储存了输入的两个参数后 随机初始化数据进入函数func4
 函数func4的转跳比较多 难度稍大 但整理后也比较好分析(对转跳的要求不是非常熟练 出错了几次)
 观察汇编发现函数分成了三个判断转跳块 经过整理后的c程序如下
+```c
 int func4(int x, int y, int z)
 {   //x in %edi, y in %esi, z in %edx
     int k = z - y;
@@ -115,8 +120,11 @@ int func4(int x, int y, int z)
     else
         return 0;
 }
-
-phase4有4个不同答案为
+```
+返回phase4观察
+在调用func4后判断返回值是否为0  而func4的唯一可变值是输入的第一参数 
+且大小范围为0xe(14) 并只有数值为0,1,3,7时func4返回0 可以确定第一个参数输入
+继续phase4 发现第二参数必须为0 由此可以得到phase4有4个不同答案为
 0 0, 1 0, 3 0, 7 0
 
 ***phase5***
