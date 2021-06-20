@@ -96,9 +96,9 @@ retq
 ```
 反汇编得到   
 ```
-fa 18 40 00       	      pushq  $0x4018fa
-5:	48 c7 c7 a8 dc 61 55 	mov    $0x5561dca8,%rdi
-c:	c3                   	retq   
+fa 18 40 00       	   pushq  $0x4018fa
+48 c7 c7 a8 dc 61 55 	mov    $0x5561dca8,%rdi
+c3                   	retq   
 ```
 答案   
 ```
