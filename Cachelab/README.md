@@ -21,3 +21,14 @@ M 表示数据修改(modify)
 
 该部分需要在 csim.c 里编写一个使用LRU策略的 cache 模拟器  
 lab提供了一个程序csim-ref 需要写出一个和它功能一样的程序  
+```
+Example 
+Usage: ./csim-ref \[-hv] -s <s> -E <E> -b <b> -t <tracefile>
+-h: Optional help flag that prints usage info
+-v: Optional verbose flag that displays trace info
+-s <s>: Number of set index bits (S = 2^s is the number of sets)
+-E <E>: Associativity (number of lines per set)
+-b <b>: Number of block bits (B = 2^b is the block size)
+-t <tracefile>: Name of the valgrind trace to replay
+ ```
+  
