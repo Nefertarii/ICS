@@ -31,4 +31,12 @@ Usage: ./csim-ref \[-hv] -s <s> -E <E> -b <b> -t <tracefile>
 -b <b>: Number of block bits (B = 2^b is the block size)
 -t <tracefile>: Name of the valgrind trace to replay
  ```
-  
+第一部分理解后相对简单 将需求拆分后一步步进行实现
+1.读取输入的参数argv 并进行判断和处理
+2.将参数存入设置好的结构中
+3.利用参数计算出高速缓存的结构 并进行初始化
+4.读取文件并保存
+5.处理文件 将其保存至一个结构组中
+6.模拟高速缓存的运行 该部分可能为难点 还没有想到好的办法处理
+7.输出运行结果
+
