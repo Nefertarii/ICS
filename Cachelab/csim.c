@@ -6,25 +6,21 @@
 
 struct Argvalue
 {
-    int h;         //print usage info
-    int v;         //displays trace info
-    int s;         //number of set index
-    int E;         //number of lines per set associativity
-    int b;         //number of block bits
+    int h; //print usage info
+    int v; //displays trace info
+    int s; //number of set index
+    int E; //number of lines per set associativity
+    int b; //number of block bits
+    int S;
+    int B;
+    int blocksize;
     const char *t; //name of the valgrind trace to replay
 };
 struct Cacheblock
 {
     int valid;        //有效位
-    unsigned int Tag; //标记位
+    unsigned int tag; //标记位
     int lru;          //lru标记
-    int B;            //高速缓存块地址长度
-};
-struct Cache
-{
-    int S;         //总共多少组
-    int E;         //每组多少行
-    int blocksize; //总占用大小
 };
 struct Hitsum
 {
@@ -35,7 +31,7 @@ struct Hitsum
 
 typedef struct Argvalue *Args;
 typedef struct Cacheblock *CacheLine;
-typedef struct Cache *CacheSet;
+typedef struct Cacheblock **CacheSet;
 typedef struct Hitsum *CacheHits;
 
 void errorinput()
@@ -53,7 +49,19 @@ void errorinput()
            "linux>  ./csim -s 4 -E 1 -b 4 -t traces/yi.trace\n"
            "linux>  ./csim -v -s 8 -E 2 -b 4 -t traces/yi.trace\n");
 }
+void initval(Args argvalue, CacheHits cachehits)
+{
+    argvalue->h = -1;
+    argvalue->v = -1;
+    argvalue->s = -1;
+    argvalue->E = -1;
+    argvalue->b = -1;
+    argvalue->t = NULL;
 
+    cachehits->evictions = 0;
+    cachehits->misses = 0;
+    cachehits->hits = 0;
+}
 int loadargv(int argc, const char *argv[], Args argvalue)
 {
     int i, tmp;
@@ -93,44 +101,37 @@ int loadargv(int argc, const char *argv[], Args argvalue)
     }
     if (argvalue->s <= 0 || argvalue->E <= 0 || argvalue->b <= 0 || argvalue->t == NULL)
         return -1;
+    tmp = 2;
+    for (i = 1; i != argvalue->s; i++)
+    {
+        tmp = tmp * 2;
+    }
+    argvalue->S = tmp;
+    tmp = 2;
+    for (i = 1; i != argvalue->b; i++)
+    {
+        tmp = tmp * 2;
+    }
+    argvalue->B = tmp;
+    argvalue->blocksize = argvalue->B * argvalue->E * argvalue->S;
     return 0;
 }
-void initval(Args argvalue, CacheHits cachehits)
+
+void initcache(Args argvalue, CacheSet cacheset)
 {
-    argvalue->h = -1;
-    argvalue->v = -1;
-    argvalue->s = -1;
-    argvalue->E = -1;
-    argvalue->b = -1;
-    argvalue->t = NULL;
-
-    cachehits->evictions = 0;
-    cachehits->misses = 0;
-    cachehits->hits = 0;
-}
-void initcache(int s, int E, int b, CacheLine cacheline, CacheSet cacheset)
-{
-    int i, tmp = 2;
-    for (i = 1; i != s; i++)
+    //多维数组的开辟要一行行malloc
+    cacheset = (CacheSet)malloc(sizeof(CacheLine) * argvalue->S);
+    for (int i = 0; i < argvalue->S; ++i)
     {
-        tmp = tmp * 2;
+        cacheset[i] = (CacheLine)malloc(sizeof(struct Cacheblock) * argvalue->E);
+        for (int j = 0; j < argvalue->E; ++j)
+        {
+            cacheset[i][j].valid = 0;
+            cacheset[i][j].tag = -1;
+            cacheset[i][j].lru = -1;
+        }
     }
-    cacheset->S = tmp;
-    tmp = 2;
-    cacheset->E = E;
-    for (i = 1; i != b; i++)
-    {
-        tmp = tmp * 2;
-    }
-    cacheline->B = tmp;
-    tmp = 2;
-    cacheset->blocksize = cacheline->B * cacheset->E * cacheset->S;
-
-    cacheline->lru = 0;
-    cacheline->Tag = 0;
-    cacheline->valid = 0;
 }
-
 int transfile(const char *filename)
 {
     FILE *fp = fopen(filename, "r");
@@ -155,19 +156,15 @@ int main(int argc, const char *argv[])
         return 0;
     }
     struct Argvalue argvalue;
-    struct Cacheblock cacheline;
-    struct Cache cacheset;
     struct Hitsum cachehits;
+    CacheSet cacheset = NULL;
     initval(&argvalue, &cachehits);
     if (loadargv(argc, argv, &argvalue) == -1)
     {
         errorinput();
         exit(1);
     }
-    initcache(argvalue.s, argvalue.E, argvalue.b, &cacheline, &cacheset);
-    int Cachesets[cacheset.S];
-    int Setblocks[cacheset.E];
-    int Blockbits[cacheline.B];
+    initcache(&argvalue, cacheset);
 
     /*
     if (transfile(argvalue.t) == -1)
