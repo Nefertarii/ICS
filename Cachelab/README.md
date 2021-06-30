@@ -59,6 +59,26 @@ Usage: ./csim-ref \[-hv] -s <s> -E <E> -b <b> -t <tracefile>
 
 
 ### ***PART B***
+转置矩阵
+把A的横行写为AT的纵列
+把A的纵列写为AT的横行
+
+该部分需要再trans.c文件中 编写一个经过优化的转置矩阵函数 名字为transpose_submit
+要求的最小miss数
+32 × 32: 8 points if m < 300, 0 points if m > 600
+64 × 64: 8 points if m < 1, 300, 0 points if m > 2, 000
+61 × 67: 10 points if m < 2, 000, 0 points if m > 3, 000
+函数可以只针对这三个大小的矩阵优化 不必应付所有大小情况
+高速缓存的大小为(s = 5, E = 1, b = 5)
+不能使用超过12个变量
+不能使用递归
+不能定义新的数组也不能开辟新的malloc空间
+不能修改矩阵A 但可以修改矩阵B
+
+
+
+
+
 
 
 
