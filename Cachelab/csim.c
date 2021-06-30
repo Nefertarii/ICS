@@ -71,7 +71,7 @@ void initval()
 }
 int loadargv(int argc, const char *argv[])
 {
-    int i, tmp;
+    int i;
     for (i = 1; i != argc; i++)
     {
         if (strcmp(argv[i], "-h") == 0)
@@ -84,18 +84,15 @@ int loadargv(int argc, const char *argv[])
         }
         else if (strcmp(argv[i], "-s") == 0)
         {
-            tmp = atoi(argv[++i]);
-            argvalue.s = tmp;
+            argvalue.s = atoi(argv[++i]);
         }
         else if (strcmp(argv[i], "-E") == 0)
         {
-            tmp = atoi(argv[++i]);
-            argvalue.E = tmp;
+            argvalue.E = atoi(argv[++i]);
         }
         else if (strcmp(argv[i], "-b") == 0)
         {
-            tmp = atoi(argv[++i]);
-            argvalue.b = tmp;
+            argvalue.b = atoi(argv[++i]);
         }
         else if (strcmp(argv[i], "-t") == 0)
         {
@@ -108,18 +105,8 @@ int loadargv(int argc, const char *argv[])
     }
     if (argvalue.s <= 0 || argvalue.E <= 0 || argvalue.b <= 0 || argvalue.t == NULL)
         return -1;
-    tmp = 2;
-    for (i = 1; i != argvalue.s; i++)
-    {
-        tmp = tmp * 2;
-    }
-    argvalue.S = tmp;
-    tmp = 2;
-    for (i = 1; i != argvalue.b; i++)
-    {
-        tmp = tmp * 2;
-    }
-    argvalue.B = tmp;
+    argvalue.S = 1 << argvalue.s;
+    argvalue.B = 1 << argvalue.b;
     argvalue.blocksize = argvalue.B * argvalue.E * argvalue.S;
     return 0;
 }
@@ -146,8 +133,8 @@ void CacheOP(unsigned int address, int memorysize)
     int E = argvalue.E;
     //知道为什么 但是这里没想到这个index 和 tag运算
     index = (address >> argvalue.b) & ((-1U) >> (64 - argvalue.s));
-    tag = address >> (argvalue.b + argvalue.s);
-    for (i = 0; i != E; i++)
+    tag = address >> (argvalue.b + argvalue.s); //t = m-(b+s)   
+    for (i = 0; i < E; ++i)
     {
         //先判断是否能命中 成功命中
         if (cacheset[index][i].tag == tag)
@@ -173,12 +160,14 @@ void CacheOP(unsigned int address, int memorysize)
     cachehits.misses++;
     cacheset[index][maxLRU].tag = tag;
     cacheset[index][maxLRU].lru = 0;
-    for (i = 0; i != E; i++)
-    {
-        if (cacheset[index][i].valid == 1)
-            cacheset[index][i].lru++;
-    }
-    return;
+}
+void updataLRU()
+{
+    int i, j, S = argvalue.S, E = argvalue.E;
+    for (i = 0; i < S; i++)
+        for (j = 0; j < E; j++)
+            if (cacheset[i][j].valid == 1)
+                cacheset[i][j].lru++;
 }
 int simulate(const char *filename)
 {
@@ -204,10 +193,10 @@ int simulate(const char *filename)
         case 'S': //store
             CacheOP(address, memorysize);
             break;
-
         default:
             break;
         }
+        updataLRU();
     }
     fclose(fp);
     return 0;
