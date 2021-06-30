@@ -145,7 +145,7 @@ void CacheOP(unsigned int address, int memorysize)
     int i, index, tag, maxLRU = 0;
     int E = argvalue.E;
     //知道为什么 但是这里没想到这个index 和 tag运算
-    index = (address >> argvalue.B) & ((-1U) >> (64 - argvalue.s));
+    index = (address >> argvalue.b) & ((-1U) >> (64 - argvalue.s));
     tag = address >> (argvalue.b + argvalue.s);
     for (i = 0; i != E; i++)
     {
@@ -156,7 +156,7 @@ void CacheOP(unsigned int address, int memorysize)
             cacheset[index][i].lru = 0;
             return;
         }
-        //命中不了查看是否有剩余空块 直接插入
+        //再判断是否为空块 空块直接插入
         if (cacheset[index][i].valid == 0)
         {
             cacheset[index][i].valid = 1;
@@ -165,20 +165,19 @@ void CacheOP(unsigned int address, int memorysize)
             cachehits.misses++;
             return;
         }
-    }
-    //执行至此 既无空行也没用命中 进行LRU替换
-    cachehits.evictions++;
-    cachehits.misses++;
-    for (i = 1; i != E - 1; i++)
-    {
-        if (cacheset[index][i - 1].lru >= cacheset[index][i].lru)
-            maxLRU = i - 1;
-        else
+        if (cacheset[index][maxLRU].lru <= cacheset[index][i].lru)
             maxLRU = i;
     }
-    cacheset[index][maxLRU].valid = 1;
+    //执行至此 既无空行也无命中 进行LRU替换
+    cachehits.evictions++;
+    cachehits.misses++;
     cacheset[index][maxLRU].tag = tag;
     cacheset[index][maxLRU].lru = 0;
+    for (i = 0; i != E; i++)
+    {
+        if (cacheset[index][i].valid == 1)
+            cacheset[index][i].lru++;
+    }
     return;
 }
 int simulate(const char *filename)
@@ -196,15 +195,16 @@ int simulate(const char *filename)
     {
         switch (operation)
         {
-        case 'L':
+        case 'L': //load
             CacheOP(address, memorysize);
             break;
-        case 'S':
+        case 'M': //modfiy
+            CacheOP(address, memorysize);
+            //break;
+        case 'S': //store
             CacheOP(address, memorysize);
             break;
-        case 'M':
-            CacheOP(address, memorysize);
-            break;
+
         default:
             break;
         }
@@ -220,7 +220,7 @@ int main(int argc, const char *argv[])
         errorinput();
         return 0;
     }
-    
+
     initval();
     if (loadargv(argc, argv) == -1)
     {
