@@ -1,1 +1,26 @@
-发现动态内存分配的问题比想象的要复杂很多 暂缓一天
+在 mm.h 中声明了以下四个函数组成,并在 mm.c 中定义。  
+int mm_init(void);  
+void \*mm_malloc(size_t size);  
+void mm_free(void \*ptr);  
+void \*mm_realloc(void \*ptr, size_t size);  
+动态存储分配器将由这四个函数构成,修改这四个函数以满足要求  
+mm_init：在调用mm_malloc、mm_realloc 或 mm_free 之前，需要调用mm_init 来执行任何必要的初始化，例如分配初始堆区域。  
+返回值如果在执行初始化时出现问题，则为-1，否则为0。  
+
+mm_malloc：mm_malloc 返回一个指针，指向至少为 size 大小的字节的区域。整个分配的块应位于堆区域内，不能与其他片重叠   
+需要像标准库的malloc一致，返回需要进行8字节对齐  
+
+mm_free：释放ptr所指向的块 什么也不返回   
+所指的块必须是mm_malloc 或是 mm_realloc所分配的块，才能释放  
+
+mm_realloc：函数将ptr所指的块重新分配为 size 大小的块  
+如果 ptr 为 NULL，调用等于 mm_malloc(size)；  
+如果 size 等于 0，调用等于 mm_free(ptr)；  
+如果 ptr 不为 NULL，ptr必须是mm_malloc 或是 mm_realloc所分配的块。  
+ 
+不能更改任何mm.c的接口  
+不能调用任何内存管理相关的库来处理  
+不能定义任何全局或静态复合数据结构 如array struct tree.. 但是可以声明全局变量如int float pointer...  
+需要与malloc 包的语义一致 也就要求返回的指针必须是8字节对齐的  
+
+感觉真的很难.
