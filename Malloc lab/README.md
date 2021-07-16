@@ -13,14 +13,21 @@ mm_malloc：mm_malloc 返回一个指针，指向至少为 size 大小的字节�
 mm_free：释放ptr所指向的块 什么也不返回   
 所指的块必须是mm_malloc 或是 mm_realloc所分配的块，才能释放  
 
-mm_realloc：函数将ptr所指的块重新分配为 size 大小的块  
+mm_realloc：函数将ptr所指的块重新分配为 size 大小的块     
 如果 ptr 为 NULL，调用等于 mm_malloc(size)；  
 如果 size 等于 0，调用等于 mm_free(ptr)；  
-如果 ptr 不为 NULL，ptr必须是mm_malloc 或是 mm_realloc所分配的块。  
+如果 ptr 不为 NULL，ptr必须是mm_malloc 或是 mm_realloc所分配的块。
+
+memlib.c 模拟了内存系统，可以调用下面的方法来得到响应的信息：
+void \*mem_sbrk(int incr)：让堆扩展 incr 个字节，并返回新分配的地址的头指针
+void \*mem_heap_lo(void)：返回指向堆的第一个字节的指针
+void \*mem_heap_hi(void)：返回指向堆的最后一个字节的指针
+size_t mem_heapsize(void)：返回当前的堆大小
+size_t mem_pagesize(void)：返回系统的 page size
  
 不能更改任何mm.c的接口  
 不能调用任何内存管理相关的库来处理  
-不能定义任何全局或静态复合数据结构 如array struct tree.. 但是可以声明全局变量如int float pointer...  
+不能定义任何全局 array, tree 或 list，但是可以定义全局 struct 和诸如 int, float 和 pointer 等变量
 需要与malloc 包的语义一致 也就要求返回的指针必须是8字节对齐的  
 
 实现一个动态内存分配器 但其接口的功能与malloc要保持一致  
