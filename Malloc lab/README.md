@@ -27,7 +27,7 @@ size_t mem_pagesize(void)：返回系统的 page size
  
 不能更改任何mm.c的接口  
 不能调用任何内存管理相关的库来处理  
-不能定义任何全局 array, tree 或 list，但是可以定义全局 struct 和诸如 int, float 和 pointer 等变量  
+不能定义任何全局 array, tree, list，struct 但是可以使用诸如 int, float 和 pointer 等变量  
 需要与malloc 包的语义一致 
 要求返回的指针必须是8字节对齐的    
 
