@@ -1,3 +1,5 @@
+看了其他人的讲解才发现网站提供的Self-Study Handout没有Traces文件夹 只有两个很小的测试文件
+
 在 mm.h 中声明了以下四个函数组成,并在 mm.c 中定义。  
 int mm_init(void);  
 void \*mm_malloc(size_t size);  
