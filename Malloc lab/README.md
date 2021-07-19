@@ -1,4 +1,8 @@
-看了其他人的讲解才发现网站提供的Self-Study Handout没有Traces文件夹 只有两个很小的测试文件
+### 反复尝试后 对该lab毫无头绪 时间不够 暂时搁置该lab   
+
+
+看了其他人的讲解才发现网站提供的Self-Study Handout没有Traces文件夹  
+只有两个很小的测试文件 其余的需要额外下载
 
 在 mm.h 中声明了以下四个函数组成,并在 mm.c 中定义。  
 int mm_init(void);  
@@ -8,13 +12,10 @@ void \*mm_realloc(void \*ptr, size_t size);
 动态内存分配器将由这四个函数构成,修改这四个函数以满足要求  
 mm_init：在调用mm_malloc、mm_realloc 或 mm_free 之前，需要调用mm_init 来执行任何必要的初始化，例如分配初始堆区域。  
 返回值如果在执行初始化时出现问题，则为-1，否则为0。  
-
 mm_malloc：mm_malloc 返回一个指针，指向至少为 size 大小的字节的区域。整个分配的块应位于堆区域内，不能与其他片重叠   
 需要像标准库的malloc一致，返回需要进行8字节对齐  
-
 mm_free：释放ptr所指向的块 什么也不返回   
 所指的块必须是mm_malloc 或是 mm_realloc所分配的块，才能释放  
-
 mm_realloc：函数将ptr所指的块重新分配为 size 大小的块     
 如果 ptr 为 NULL，调用等于 mm_malloc(size)；  
 如果 size 等于 0，调用等于 mm_free(ptr)；  
@@ -43,4 +44,4 @@ free操作会产生空闲的块，如何维护这些空闲的块
 两天在摸清楚了书上的基础实现后 准备开始在该模板上转换方式实现更高效的动态内存分配器  
 对于书上的模板 有许多地方并没有实现 且没有合并操作/清除无效块 导致堆内存会超出限制 
 
-### 反复尝试后 对该lab毫无头绪 时间不够 暂时搁置该lab   
+
